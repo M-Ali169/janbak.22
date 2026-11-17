@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>جنبك – رعاية ذكية متكاملة</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f172a;--c:#1e293b;--b:#334155;--t:#f1f5f9;--m:#94a3b8;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:radial-gradient(900px 480px at 85% -10%,rgba(20,184,166,.2),transparent),radial-gradient(700px 400px at 0% 100%,rgba(56,189,248,.08),transparent),var(--bg);background-attachment:fixed;color:var(--t);font-family:Cairo,Tahoma,sans-serif}
+.ttl{display:flex;align-items:center;gap:8px;font-weight:700;color:#5eead4}.ttl svg{width:18px;height:18px}
+.card{background:linear-gradient(180deg,rgba(30,41,59,.95),rgba(30,41,59,.7));border:1px solid var(--b);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.in{background:rgba(15,23,42,.7);border:1px solid var(--b);border-radius:10px;padding:8px 12px;width:100%;color:var(--t);margin-top:6px}.in:focus{outline:2px solid #14b8a6;border-color:transparent}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;color:#fff;font-weight:700;background:linear-gradient(135deg,#14b8a6,#0d9488);margin-top:8px;transition:.15s;box-shadow:0 4px 12px rgba(13,148,136,.35);cursor:pointer}.btn:hover{transform:translateY(-1px);filter:brightness(1.12)}
+.btn.r{background:linear-gradient(135deg,#ef4444,#b91c1c);box-shadow:0 4px 12px rgba(220,38,38,.35)}.btn.g{background:#475569;box-shadow:none}
+.mut{color:var(--m)}
+.tab{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;border:1px solid var(--b);background:var(--c);font-weight:700;cursor:pointer;transition:.15s}
+.tab.on{background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;border-color:#14b8a6;box-shadow:0 0 18px rgba(20,184,166,.45)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:.75rem;font-weight:700}
+</style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-teal-500 selection:text-white">
+
+<!-- الرأس وشريط التنقل بين الأطراف (RBAC) -->
+<header class="p-3 max-w-6xl mx-auto w-full">
+  <div class="flex flex-wrap items-center gap-3">
+    <svg width="54" height="54" viewBox="0 0 64 64" role="img" aria-label="شعار جنبك" style="filter:drop-shadow(0 6px 14px rgba(20,184,166,.45))">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#0d9488"/></linearGradient></defs>
+      <path d="M32 4 56 13v17c0 15-10 26-24 30C18 56 8 45 8 30V13z" fill="url(#lg)"/>
+      <circle cx="23" cy="25" r="5" fill="#fff"/><circle cx="41" cy="27" r="3.6" fill="#fff" opacity=".9"/>
+      <path d="M14 44h10l4-8 5 12 4-8h13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <div class="text-3xl sm:text-4xl font-black leading-tight bg-clip-text text-transparent bg-gradient-to-l from-teal-300 to-sky-300">جنبك</div>
+      <div class="text-xs mut">Janbak · منظومة الرعاية الذكية المترابطة لكبار السن والأطفال</div>
+    </div>
+    <div class="ms-auto flex items-center gap-2">
+      <button class="btn" style="margin:0" onclick="demo()"><i data-lucide="play" class="w-4 h-4"></i> عرض تجريبي</button>
+      <button class="btn g" style="margin:0" onclick="downloadApp()"><i data-lucide="download" class="w-4 h-4"></i> تحميل الملف</button>
+      <span class="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border" style="border-color:var(--b);background:rgba(30,41,59,.6)">
+        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+        <span id="sy">الربط السحابي نشط</span>
+      </span>
+    </div>
+  </div>
+  <p class="text-xs sm:text-sm mut flex items-center gap-1 mt-3">
+    <i data-lucide="map-pin" class="w-4 h-4 text-teal-400 shrink-0"></i>
+    شارع مصطفى كامل، مركز ملوي، المنيا · GPS: 27.7310°N, 30.8410°E
+  </p>
+  <nav id="tabs" class="flex flex-wrap gap-2 mt-3"></nav>
+</header>
+
+<!-- شريط تنبيه الطوارئ العام -->
+<div id="banner" class="w-full"></div>
+
+<!-- المحتوى الرئيسي: الواجهة + الشات وسجل المراجعة -->
+<div class="max-w-6xl mx-auto px-3 grid lg:grid-cols-3 gap-4 w-full flex-1">
+  <main id="main" class="lg:col-span-2"></main>
+  <aside class="flex flex-col">
+    <!-- الشات التفاعلي الحي بين جميع الأطراف -->
+    <div class="card flex flex-col">
+      <div class="flex items-center justify-between">
+        <b class="ttl"><i data-lucide="message-circle"></i> الشات التفاعلي المشترك</b>
+        <span class="text-xs mut">متصل: 4 أطراف</span>
+      </div>
+      <div id="cm" class="h-60 overflow-y-auto mt-2 p-2 rounded-xl space-y-2" style="background:rgba(15,23,42,.55)"></div>
+      <div class="flex flex-wrap gap-1 mt-2">
+        <button type="button" class="text-xs px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600" onclick="quickMsg('أنا بخير والحمد لله')">👍 أنا بخير</button>
+        <button type="button" class="text-xs px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600" onclick="quickMsg('تم أخذ جرعة الدواء في موعدها')">💊 أخذت الدواء</button>
+        <button type="button" class="text-xs px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600" onclick="quickMsg('يرجى متابعة القياسات الآن')">🩺 متابعة القياسات</button>
+      </div>
+      <form onsubmit="send(event)" class="flex gap-2 mt-1">
+        <input id="ci" class="in" placeholder="اكتب رسالة لجميع الأطراف..." autocomplete="off">
+        <button class="btn shrink-0"><i data-lucide="send" class="w-4 h-4"></i> إرسال</button>
+      </form>
+    </div>
+
+    <!-- سجل المراجعة الأمني -->
+    <div class="card">
+      <b class="ttl"><i data-lucide="scroll-text"></i> سجل المراجعة والربط (Audit Log)</b>
+      <div id="al" class="h-56 overflow-y-auto mt-2 text-xs space-y-1.5"></div>
+    </div>
+  </aside>
+</div>
+
+<!-- شاشة العد التنازلي عند السقوط -->
+<div id="ov" style="display:none;position:fixed;inset:0;background:rgba(127,0,0,.94);z-index:50;color:#fff;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px">
+  <div class="text-3xl sm:text-4xl font-black">⚠️ تم رصد سقوط مفاجئ!</div>
+  <p class="text-sm mt-1 opacity-90">المصدر: مستشعر الساعة الذكية + الكاميرا (AI Vision)</p>
+  <div id="cdn" class="text-8xl font-black my-4">30</div>
+  <p>سيتم إرسال إشعار طوارئ للمرافق ود. سارة والمستشفى عند الصفر</p>
+  <div class="flex flex-wrap justify-center gap-3 mt-5">
+    <button class="btn" style="background:#16a34a;font-size:1.1rem" onclick="safe()">✅ أنا بخير (إلغاء)</button>
+    <button class="btn r" style="font-size:1.1rem" onclick="endCD();alarm('استغاثة فورية بعد السقوط')">🚨 اطلب المساعدة الآن</button>
+  </div>
+</div>
+
+<!-- شريط العرض التجريبي -->
+<div id="dm" style="display:none;position:fixed;bottom:calc(70px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#0d9488;color:#fff;padding:10px 16px;border-radius:14px;z-index:55;align-items:center;gap:10px;max-width:94vw;font-weight:700;box-shadow:0 10px 25px rgba(0,0,0,.5)">
+  <span id="dt"></span>
+  <button class="btn g" style="margin:0" onclick="stopDemo()">إيقاف</button>
+</div>
+
+<!-- إشعار منبثق -->
+<div id="ts" style="display:none;position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#0f172a;border:1px solid #14b8a6;color:#fff;padding:10px 18px;border-radius:12px;z-index:60;box-shadow:0 8px 20px rgba(0,0,0,.5)"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const C0={lat:27.7310,lng:30.8410};
+const RN={patient:'المريض',companion:'المرافق',doctor:'د. سارة حسن',hospital:'المستشفى'};
+const RCOL={patient:'text-teal-400',companion:'text-sky-400',doctor:'text-purple-400',hospital:'text-rose-400',system:'text-amber-400'};
+
+// ---- OOP: الوراثة (Person -> Elder / Child) ----
+class Person{
+  constructor(n,a,cond='لا يوجد'){this.name=n;this.age=a;this.cond=cond;this.type='Person'}
+  profile(){return 'ملف رعاية عام'}
+}
+class Elder extends Person{
+  constructor(n,a,cond){super(n,a,cond);this.type='Elder'}
+  profile(){return 'كبير سن: كشف السقوط بالساعة والكاميرا + مراقبة الأمراض المزمنة + منبه الأدوية'}
+}
+class Child extends Person{
+  constructor(n,a,cond){super(n,a,cond);this.type='Child'}
+  profile(){return 'طفل: سياج جغرافي صارم بملوي + إشعار فوري للمرافق + بث الكاميرا عند الخطر'}
+}
+const mk=(t,n,a,c)=>t==='Child'?new Child(n,a,c):new Elder(n,a,c);
+const now=()=>new Date().toLocaleTimeString('ar-EG');
+
+// ---- الحالة المركزية المشتركة بين جميع الأطراف ----
+let S={
+  role:'patient',
+  me:0,
+  sel:0,
+  privacy:true,
+  camOn:true,
+  watchOn:true,
+  watchBat:88,
+  emergency:null,
+  dist:120,
+  out:false,
+  appts:[],
+  cases:[],
+  chat:[{w:'system',m:'مرحباً بكم في منظومة جنبك – الربط السحابي نشط بين جميع الأطراف.',t:now()}],
+  audit:[],
+  P:[
+    {p:mk('Elder','عم محمود',72,'السكري من النوع الثاني + الضغط'),face:true,dx:'السكري من النوع الثاني + ارتفاع ضغط الدم',rx:'جلوكوفاج 500 مجم بعد الغداء + أملوديبين 5 مجم صباحاً',sugar:132,meds:[{n:'أملوديبين 5 مجم',t:'08:00'},{n:'جلوكوفاج 500 مجم',t:'14:00'}]},
+    {p:mk('Elder','الحاجة فاطمة',80,'الزهايمر (تتبع جغرافي مشدد)'),face:true,dx:'الزهايمر المبكر + هشاشة عظام',rx:'متابعة السياج الجغرافي حول شارع مصطفى كامل بملوي باستمرار',sugar:105,meds:[{n:'دونيبيزيل 5 مجم',t:'20:00'}]},
+    {p:mk('Child','حسن',8,'متابعة نمو وسكري أطفال'),face:false,dx:'متابعة عامة',rx:'',sugar:98,meds:[]}
+  ]
+};
+const cur=()=>S.P[S.me];
+
+function log(a,x){S.audit.unshift({t:now(),a,x});renderLog()}
+function renderLog(){$('al').innerHTML=S.audit.slice(0,45).map(e=>`<div class="border-b border-slate-800 pb-1"><span class="mut">${e.t}</span> <b class="text-teal-300">${esc(e.a)}</b>: ${esc(e.x)}</div>`).join('')}
+
+function say(w,m){S.chat.push({w,m,t:now()});renderChat()}
+function renderChat(){
+  const b=$('cm');
+  b.innerHTML=S.chat.map(m=>`
+    <div class="text-xs sm:text-sm p-2 rounded-lg ${m.w==='system'?'bg-slate-800/80 border border-slate-700':'bg-slate-900/80'}">
+      <div class="flex justify-between items-center mb-0.5">
+        <b class="${RCOL[m.w]||'text-teal-400'}">${m.w==='system'?'النظام الذكي':RN[m.w]}</b>
+        <span class="mut text-[10px]">${m.t||''}</span>
+      </div>
+      <div>${esc(m.m)}</div>
+    </div>`).join('');
+  b.scrollTop=b.scrollHeight;
+}
+function send(e){e.preventDefault();const i=$('ci'),v=i.value.trim();if(!v)return;say(S.role,v);log(RN[S.role],'رسالة في الشات: '+v);i.value=''}
+function quickMsg(txt){say(S.role,txt);log(RN[S.role],'رسالة سريعة: '+txt)}
+
+function toast(m){const t=$('ts');t.textContent=m;t.style.display='block';clearTimeout(toast.i);toast.i=setTimeout(()=>t.style.display='none',3500)}
+let AC;function beep(f=880,d=.25){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.value=.15;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+
+// ---- تبديل الأدوار (RBAC) ----
+function setRole(r){S.role=r;log('النظام','تبديل الواجهة إلى: '+RN[r]);render()}
+function render(){
+  const icons={patient:'user',companion:'users',doctor:'stethoscope',hospital:'building-2'};
+  $('tabs').innerHTML=Object.keys(RN).map(r=>`<button class="tab ${S.role===r?'on':''}" onclick="setRole('${r}')"><i data-lucide="${icons[r]}" class="w-4 h-4"></i>${RN[r]}${r==='doctor'?' (استشاري)':''}</button>`).join('');
+
+  $('banner').innerHTML=S.emergency?`
+    <div class="max-w-6xl mx-auto px-3 mb-2">
+      <div class="card flex flex-wrap items-center justify-between gap-2" style="background:linear-gradient(90deg,#dc2626,#991b1b);color:#fff;border-color:#f87171">
+        <div>🚨 <b>حالة طوارئ نشطة ومربوطة بجميع الأطراف:</b> ${esc(S.P[S.emergency.pid].p.name)} (${esc(S.P[S.emergency.pid].p.cond)}) – الساعة ${S.emergency.t}</div>
+        <button class="btn g" style="margin:0" onclick="endEm()">إنهاء حالة الطوارئ</button>
+      </div>
+    </div>`:'';
+
+  $('main').innerHTML=({patient:vPatient,companion:vComp,doctor:vDoc,hospital:vHosp})[S.role]();
+  syncGeo();
+  try{lucide.createIcons()}catch(e){}
+}
+
+const ptSel=()=>`<select class="in" onchange="S.me=+this.value;render()">${S.P.map((x,i)=>`<option value=${i} ${i==S.me?'selected':''}>${esc(x.p.name)} (${x.p.type} – ${esc(x.p.cond)})</option>`).join('')}</select>`;
+
+// ---- 1. واجهة المريض ----
+function vPatient(){
+  const c=cur(),p=c.p;
+  const myAp=S.appts.filter(a=>a.pid===S.me).map(a=>`<li>📅 ${a.d} ${a.t} – ${esc(a.r)} <b class="text-teal-400">(${a.st})</b></li>`).join('')||'<li class="mut">لا مواعيد محجوزة</li>';
+  return `
+  <div class="card">
+    <div class="flex flex-wrap justify-between items-center gap-2">
+      <b class="ttl"><i data-lucide="user-check"></i> ملف المريض النشط</b>
+      <span class="badge bg-teal-950 text-teal-300 border border-teal-700">${p.type} extends Person</span>
+    </div>
+    ${ptSel()}
+    <div class="mt-3 space-y-1 text-sm">
+      <p>الاسم: <b>${esc(p.name)}</b> · العمر: <b>${p.age} سنة</b></p>
+      <p>الحالة الصحية / المرض المزمن: <b class="text-amber-300">${esc(p.cond)}</b></p>
+      <p class="mut">${p.profile()}</p>
+      <p>بصمة الوجه (AI Face ID): ${c.face?'<span class="text-green-400 font-bold">✅ مسجّلة ومفعّلة</span>':'<span class="text-rose-400 font-bold">❌ غير مسجّلة</span>'}</p>
+    </div>
+  </div>
+
+  <div class="grid sm:grid-cols-2 gap-3">
+    <div class="card">
+      <b class="ttl"><i data-lucide="user-plus"></i> تسجيل مريض جديد</b>
+      <input id="rn" class="in" placeholder="اسم المريض">
+      <input id="ra" type="number" class="in" placeholder="العمر">
+      <select id="rc" class="in">
+        <option value="Elder">Elder – كبير سن</option>
+        <option value="Child">Child – طفل</option>
+      </select>
+      <select id="rd" class="in">
+        <option value="السكري من النوع الثاني">السكري من النوع الثاني</option>
+        <option value="الزهايمر (تتبع جغرافي مشدد)">الزهايمر (تتبع جغرافي مشدد)</option>
+        <option value="السكري + الزهايمر">السكري + الزهايمر</option>
+        <option value="ارتفاع ضغط الدم">ارتفاع ضغط الدم</option>
+        <option value="متابعة عامة بدون أمراض مزمنة">متابعة عامة بدون أمراض مزمنة</option>
+      </select>
+      <button class="btn w-full justify-center" onclick="reg()">تسجيل وربط بالمنظومة</button>
+    </div>
+
+    <div class="card">
+      <b class="ttl"><i data-lucide="scan-face"></i> بصمة الوجه (AI Face ID)</b>
+      <p class="text-xs mut mt-1">تُستخدم في الكاميرا الذكية للتعرف على المريض ومنع الإنذارات الكاذبة.</p>
+      <div class="h-2.5 rounded-full bg-slate-800 mt-3 overflow-hidden"><div id="fb" class="h-full bg-teal-500 transition-all" style="width:${c.face?'100':'0'}%"></div></div>
+      <p id="ft" class="text-xs mut mt-2">${c.face?'البصمة جاهزة ومربوطة بالكاميرا':'اضغط لالتقاط بصمة الوجه'}</p>
+      <button class="btn w-full justify-center mt-3" onclick="scan()">التقاط / تحديث بصمة الوجه</button>
+    </div>
+  </div>
+
+  <div class="grid sm:grid-cols-2 gap-3">
+    <div class="card">
+      <b class="ttl"><i data-lucide="pill"></i> منبه الأدوية الذكي</b>
+      <ul class="text-sm my-2 space-y-1">${c.meds.map(m=>`<li>⏰ <b>${m.t}</b> – ${esc(m.n)}</li>`).join('')||'<li class="mut">لا توجد أدوية مضافة</li>'}</ul>
+      <div class="flex gap-2"><input id="mn" class="in" placeholder="اسم الدواء"><input id="mt" type="time" class="in" value="09:00"></div>
+      <div class="flex gap-2">
+        <button class="btn" onclick="addMed()">إضافة</button>
+        <button class="btn g" onclick="medAlarm(S.me,{n:'جرعة السكري / الضغط',t:'الآن'})">تجربة المنبه</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <b class="ttl"><i data-lucide="calendar-plus"></i> حجز موعد عند د. سارة حسن</b>
+      <div class="flex gap-2"><input id="ad" type="date" class="in" value="${new Date().toISOString().slice(0,10)}"><input id="at" type="time" class="in" value="11:30"></div>
+      <input id="ar" class="in" placeholder="سبب الكشف (مثلاً: متابعة السكر والضغط)">
+      <button class="btn" onclick="book()">تأكيد الحجز</button>
+      <ul class="text-xs mt-2 space-y-1">${myAp}</ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <b class="ttl"><i data-lucide="file-text"></i> الروشتة وتوصيات الطبيب الاستشاري</b>
+    <p class="mt-2 text-sm whitespace-pre-wrap p-3 rounded-xl bg-slate-900/60 border border-slate-800">${c.rx?esc(c.rx):'<span class="mut">لم تُكتب روشتة بعد</span>'}</p>
+  </div>
+  ${monitor()}`;
+}
+
+// ---- 2. واجهة المرافق ----
+function vComp(){
+  const c=cur();
+  const isAlz=c.p.cond.includes('الزهايمر');
+  return `
+  <div class="card">
+    <div class="flex flex-wrap justify-between items-center gap-2">
+      <b class="ttl"><i data-lucide="users"></i> لوحة متابعة المرافق</b>
+      <span class="badge ${S.emergency?'bg-rose-950 text-rose-300 border border-rose-700':S.out?'bg-amber-950 text-amber-300 border border-amber-700':'bg-green-950 text-green-300 border border-green-700'}">
+        ${S.emergency?'🚨 طوارئ نشطة':S.out?'⚠️ خارج النطاق الآمن':'✅ الحالة مستقرة'}
+      </span>
+    </div>
+    ${ptSel()}
+    <div class="mt-2 text-sm space-y-1">
+      <p>المريض: <b>${esc(c.p.name)}</b> · الحالة الصحية: <b class="text-amber-300">${esc(c.p.cond)}</b></p>
+      ${isAlz?'<p class="text-xs text-amber-400">⚠️ تنبيه الزهايمر مفعّل: يتم إخطارك فوراً عند ابتعاد المريض عن شارع مصطفى كامل بملوي.</p>':''}
+    </div>
+    <button class="btn r" onclick="alarm('طلب إسعاف عاجل من المرافق')">🚑 طلب إسعاف فوري</button>
+  </div>
+  ${monitor()}`;
+}
+
+// ---- 3. واجهة الطبيب الاستشاري ----
+function vDoc(){
+  const c=S.P[S.sel];
+  return `
+  <div class="card">
+    <div class="flex justify-between items-center">
+      <b class="ttl"><i data-lucide="stethoscope"></i> د. سارة حسن – استشاري</b>
+      <span class="text-xs mut">الحالات المتابعة: ${S.P.length}</span>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-2 mt-3">
+      ${S.P.map((x,i)=>`
+        <button class="p-3 rounded-xl text-right border transition ${i==S.sel?'border-teal-400 bg-teal-950/40':'border-slate-700 bg-slate-900/50'}" onclick="S.sel=${i};render()">
+          <div class="font-bold text-sm">${esc(x.p.name)} <span class="text-xs mut">(${x.p.type})</span></div>
+          <div class="text-xs text-amber-300 mt-0.5">${esc(x.p.cond)}</div>
+        </button>`).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <b class="ttl"><i data-lucide="calendar-check"></i> المواعيد الواردة من المرضى (${S.appts.length})</b>
+    <div class="mt-2 space-y-2">
+      ${S.appts.map((a,i)=>`
+        <div class="text-sm p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+          <div><b>${esc(S.P[a.pid].p.name)}</b> · ${a.d} (${a.t}) · ${esc(a.r)} <span class="text-teal-400 font-bold">[${a.st}]</span></div>
+          ${a.st==='جديد'?`<button class="btn" style="margin:0" onclick="S.appts[${i}].st='مؤكد';log('د. سارة','تأكيد موعد ${esc(S.P[a.pid].p.name)}');say('doctor','تم تأكيد موعد ${esc(S.P[a.pid].p.name)}');render()">تأكيد الموعد</button>`:''}
+        </div>`).join('')||'<p class="mut text-sm">لا توجد مواعيد واردة حالياً</p>'}
+    </div>
+  </div>
+
+  <div class="card">
+    <b class="ttl"><i data-lucide="file-pen"></i> التشخيص والروشتة – ${esc(c.p.name)}</b>
+    <input id="dxt" class="in" value="${esc(c.dx)}" placeholder="التشخيص الطبي">
+    <textarea id="rxt" rows="3" class="in" placeholder="اكتب الأدوية والجرعات والتوصيات...">${esc(c.rx)}</textarea>
+    <div class="flex flex-wrap gap-2 mt-1">
+      <button class="btn" onclick="saveRx()">💾 حفظ وإرسال للمريض والمرافق</button>
+      <button class="btn r" onclick="toHosp()">🚑 تحويل الحالة للمستشفى</button>
+    </div>
+  </div>
+  ${cam()}`;
+}
+
+// ---- 4. واجهة المستشفى / الطوارئ ----
+function vHosp(){
+  return `
+  <div class="card">
+    <b class="ttl"><i data-lucide="building-2"></i> مركز طوارئ مستشفى ملوي</b>
+    <div class="mt-2 space-y-2">
+      ${S.cases.map(k=>`
+        <div class="text-sm p-3 rounded-xl bg-slate-900/70 border border-rose-900/60">
+          <div class="flex justify-between"><b>🚨 ${esc(S.P[k.pid].p.name)} (${S.P[k.pid].p.type})</b><span class="mut text-xs">${k.t}</span></div>
+          <div class="text-xs text-amber-300 mt-0.5">الحالة: ${esc(S.P[k.pid].p.cond)}</div>
+          <div class="text-xs mut mt-0.5">المصدر: ${esc(k.src)} ${k.note?'| ملاحظة الطبيب: '+esc(k.note):''}</div>
+        </div>`).join('')||'<p class="mut text-sm">لا توجد بلاغات طوارئ واردة حالياً</p>'}
+    </div>
+    <button class="btn r mt-3" onclick="log('المستشفى','تحريك سيارة إسعاف إلى شارع مصطفى كامل، ملوي');say('hospital','🚑 سيارة الإسعاف تحركت الآن إلى شارع مصطفى كامل، مركز ملوي');toast('تم إرسال سيارة الإسعاف')">🚑 إرسال سيارة إسعاف إلى ملوي</button>
+  </div>
+  ${cam()}`;
+}
+
+// ---- الإجراءات والربط ----
+function reg(){
+  const n=$('rn').value.trim(),a=+$('ra').value,t=$('rc').value,d=$('rd').value;
+  if(!n||!a)return toast('يرجى إدخال اسم المريض وعمره');
+  const p=mk(t,n,a,d);
+  S.P.push({p,face:false,dx:d,rx:'',sugar:d.includes('السكري')?135:102,meds:[]});
+  S.me=S.P.length-1;
+  log('المريض','تسجيل مريض جديد: '+n+' ('+t+' – '+d+')');
+  say('system','تم تسجيل المريض '+n+' ('+d+') وربطه بجميع الأطراف.');
+  toast('تم تسجيل المريض بنجاح');
+  render();
+}
+
+function scan(){
+  let v=0;
+  $('ft').textContent='جارٍ مسح ملامح الوجه وربطها بالكاميرا...';
+  const iv=setInterval(()=>{
+    v+=20;
+    const b=$('fb');if(b)b.style.width=v+'%';
+    if(v>=100){
+      clearInterval(iv);
+      cur().face=true;
+      const s=(97+Math.random()*2.5).toFixed(1);
+      log('الكاميرا الذكية','تطابق بصمة الوجه لـ '+cur().p.name+' بنسبة '+s+'%');
+      toast('تم تسجيل بصمة الوجه بنجاح ('+s+'%)');
+      render();
+    }
+  },180);
+}
+
+function addMed(){
+  const n=$('mn').value.trim();
+  if(!n)return;
+  cur().meds.push({n,t:$('mt').value});
+  log('المريض','إضافة منبه دواء: '+n);
+  render();
+}
+function medAlarm(pid,m){
+  const msg='💊 تنبيه دواء: حان موعد ('+m.n+') للمريض '+S.P[pid].p.name;
+  toast(msg);beep(988,.35);setTimeout(()=>beep(1175,.35),400);
+  log('منبه الأدوية',msg);say('system',msg);
+}
+setInterval(()=>{
+  const hm=new Date().toLocaleTimeString('en-GB').slice(0,5);
+  S.P.forEach((x,i)=>x.meds.forEach(m=>{if(m.t===hm&&m.last!==hm){m.last=hm;medAlarm(i,m)}}));
+},1000);
+
+function book(){
+  const r=$('ar').value.trim();
+  if(!r)return toast('اكتب سبب الزيارة أولاً');
+  S.appts.push({pid:S.me,d:$('ad').value,t:$('at').value,r,st:'جديد'});
+  log('المريض','حجز موعد عند د. سارة حسن ('+r+')');
+  say('patient','قمت بحجز موعد جديد عند د. سارة حسن: '+r);
+  toast('وصل الحجز إلى لوحة د. سارة حسن فوراً');
+  render();
+}
+
+function saveRx(){
+  const c=S.P[S.sel];
+  c.rx=$('rxt').value;c.dx=$('dxt').value;
+  log('د. سارة حسن','تحديث الروشتة لـ '+c.p.name);
+  say('doctor','تم تحديث الروشتة والتوصيات الطبية لـ '+c.p.name);
+  toast('ظهرت الروشتة فوراً عند المريض والمرافق');
+  render();
+}
+
+function toHosp(){
+  const c=S.P[S.sel];
+  S.cases.unshift({pid:S.sel,src:'تحويل طبي عاجل من د. سارة حسن',t:now(),note:c.rx.slice(0,60)});
+  log('د. سارة حسن','تحويل حالة '+c.p.name+' إلى المستشفى');
+  say('doctor','🚑 تم تحويل حالة '+c.p.name+' إلى طوارئ المستشفى بملوي');
+  toast('تم إرسال ملف الحالة للمستشفى');
+  render();
+}
+
+function endEm(){
+  S.emergency=null;F.a=0;
+  log(RN[S.role],'إنهاء حالة الطوارئ');
+  say('system','تم إنهاء حالة الطوارئ وعودة النظام للوضع الطبيعي');
+  render();
+}
+
+// ---- سيناريو كشف السقوط ----
+const F={a:0,run:false},CD={n:30,iv:null};
+const conf=()=>Math.round(Math.min(99,4+F.a*1.1));
+function simFall(){
+  if(CD.iv||S.emergency)return;
+  if(!S.camOn && !S.watchOn)return toast('يرجى تفعيل الكاميرا أو الساعة الذكية أولاً');
+  F.run=true;
+  log(RN[S.role],'بدء محاكاة السقوط (رصد مشترك من الساعة والكاميرا)');
+}
+function startCD(){
+  if(CD.iv)return;
+  CD.n=30;$('ov').style.display='flex';$('cdn').textContent=30;
+  log('الذكاء الاصطناعي','رُصد سقوط بنسبة ثقة '+conf()+'% – بدء العد التنازلي 30 ثانية');
+  beep(1000,.4);
+  CD.iv=setInterval(()=>{
+    CD.n--;$('cdn').textContent=CD.n;
+    beep(CD.n<6?1300:800,.2);
+    if(CD.n<=0){endCD();alarm('إنذار تلقائي (عدم استجابة المريض خلال 30 ثانية)')}
+  },1000);
+}
+function endCD(){clearInterval(CD.iv);CD.iv=null;$('ov').style.display='none'}
+function safe(){
+  endCD();F.a=0;
+  log('المريض','ضغط "أنا بخير" وإلغاء الإنذار');
+  say('patient','أنا بخير، تم إلغاء الإنذار');
+  toast('تم إلغاء الإنذار بنجاح');
+}
+function alarm(src){
+  const c=cur();
+  S.emergency={pid:S.me,t:now()};
+  S.cases.unshift({pid:S.me,src,t:S.emergency.t});
+  log('نظام الطوارئ','🚨 '+src+' – المريض: '+c.p.name+' ('+c.p.cond+')');
+  log('نظام الأمان (RBAC)','تجاوز مفتاح الخصوصية تلقائياً لفتح بث الكاميرا للمرافق والمستشفى');
+  say('system','🚨 إنذار طوارئ! '+c.p.name+' – '+src+' (الموقع: شارع مصطفى كامل، ملوي)');
+  beep(1500,.7);
+  render();
+}
+
+// ---- وحدة الكاميرا الذكية (AI Camera + Posture Skeleton) ----
+function cam(){
+  const mine=S.role==='patient';
+  const canSee=mine || S.emergency || (!S.privacy && S.role!=='hospital');
+  const controls=mine?`
+    <div class="flex items-center gap-3 text-xs">
+      <label class="inline-flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" ${S.camOn?'checked':''} onchange="S.camOn=this.checked;log('المريض','الكاميرا الذكية: '+(S.camOn?'تشغيل':'إيقاف'));render()">
+        <span>تشغيل الكاميرا</span>
+      </label>
+      <label class="inline-flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" ${S.privacy?'checked':''} onchange="S.privacy=this.checked;log('المريض','مفتاح الخصوصية: '+(S.privacy?'مفعّل':'مُعطّل'));render()">
+        <span>🔒 خصوصية البث</span>
+      </label>
+    </div>`:`<span class="text-xs mut">${S.emergency?'🔓 بث طوارئ مفتوح تلقائياً':S.privacy?'🔒 محجوب بالخصوصية':'🔓 متاح للمتابعة'}</span>`;
+
+  return `
+  <div class="card">
+    <div class="flex flex-wrap justify-between items-center gap-2">
+      <b class="ttl"><i data-lucide="camera"></i> الكاميرا الذكية والرؤية الحاسوبية (AI Camera)</b>
+      ${controls}
+    </div>
+    ${!S.camOn?`<div class="mt-3 rounded-xl text-center py-10 mut bg-slate-900/70 border border-slate-800">📷 الكاميرا متوقفة حالياً – الاعتماد على الساعة الذكية فقط</div>`:
+    canSee?`
+      <div class="relative mt-2 rounded-xl overflow-hidden border border-slate-700" style="background:#070d19">
+        <div class="absolute top-2 right-2 text-xs px-2 py-0.5 rounded bg-slate-900/80 text-teal-300 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> LIVE · AI Pose Detection
+        </div>
+        <div class="absolute top-2 left-2 text-xs px-2 py-0.5 rounded bg-slate-900/80 text-sky-300">
+          ${cur().face?'✅ Face ID: '+esc(cur().p.name):'⚠️ وجه غير مسجل'}
+        </div>
+        <svg class="skel w-full" style="max-height:220px" viewBox="0 0 200 200"></svg>
+      </div>
+      <div class="flex flex-wrap justify-between items-center text-xs sm:text-sm mt-2">
+        <span>تحليل الوضعية: <b class="pst">طبيعي</b></span>
+        <span>احتمال السقوط: <b class="cf">4</b>%</span>
+        <span class="mut">الدقة: 1080p · 30fps</span>
+      </div>`:
+    `<div class="mt-3 rounded-xl text-center py-10 mut bg-slate-900/70 border border-slate-800">
+      🔒 البث المرئي محجوب لحماية خصوصية المريض – يُفتح تلقائياً فور وقوع طوارئ
+    </div>`}
+  </div>`;
+}
+
+function skel(){
+  if(!S.camOn)return;
+  const a=F.a*Math.PI/180,t=Date.now()/600,w=Math.sin(t)*3,H=[100,140+F.a*.25];
+  const P=(b,l,g)=>[b[0]+l*Math.sin(g),b[1]-l*Math.cos(g)],Sh=P(H,50,a),Hd=P(H,68,a),
+  LA=P(Sh,34,a+Math.PI-.35+w/30),RA=P(Sh,34,a+Math.PI+.35-w/30),LL=P(H,48,Math.PI-.15),RL=P(H,48,Math.PI+.15);
+  const k=conf(),col=k>50?'#ef4444':'#22c55e',L=(p,q)=>`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}"/>`;
+  const svg=`<line x1="0" y1="190" x2="200" y2="190" stroke="#1e293b" stroke-width="2"/><g stroke="${col}" stroke-width="3.5" stroke-linecap="round">${L(H,Sh)}${L(Sh,LA)}${L(Sh,RA)}${L(H,LL)}${L(H,RL)}</g><g fill="${col}"><circle cx="${Hd[0]}" cy="${Hd[1]}" r="9" fill="none" stroke="${col}" stroke-width="3"/>${[H,Sh,LA,RA,LL,RL].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5"/>`).join('')}</g>`;
+  document.querySelectorAll('.skel').forEach(e=>e.innerHTML=svg);
+  document.querySelectorAll('.pst').forEach(e=>{e.textContent=k>50?'⚠️ سقوط مرصود!':'✅ وقوف / حركة طبيعية';e.style.color=col});
+  document.querySelectorAll('.cf').forEach(e=>e.textContent=k);
+}
+
+function loop(){
+  if(F.run){
+    F.a=Math.min(85,F.a+1.2);
+    if(F.a>=85){F.run=false;startCD()}
+  }else if(F.a>0&&!CD.iv&&!S.emergency){
+    F.a=Math.max(0,F.a-2);
+  }
+  skel();
+  requestAnimationFrame(loop);
+}
+
+// ---- الساعة الذكية + العلامات الحيوية (السكري، النبض، الأكسجين) ----
+function vitals(){
+  const c=cur();
+  const hasDiabetes=c.p.cond.includes('السكري');
+  const b=(cls,lbl)=>`<div class="rounded-xl p-2.5 bg-slate-900/70 border border-slate-800"><div class="mut text-xs">${lbl}</div><b class="text-lg sm:text-xl ${cls}">–</b></div>`;
+  return `
+  <div class="card">
+    <div class="flex flex-wrap justify-between items-center gap-2">
+      <b class="ttl"><i data-lucide="watch"></i> الساعة الذكية والمؤشرات الحيوية (Smartwatch BLE)</b>
+      <label class="text-xs inline-flex items-center gap-1.5 cursor-pointer">
+        <input type="checkbox" ${S.watchOn?'checked':''} onchange="S.watchOn=this.checked;log(RN[S.role],'حالة الساعة الذكية: '+(S.watchOn?'متصلة':'غير متصلة'));render()">
+        <span>${S.watchOn?'🟢 متصلة (بطارية '+S.watchBat+'%)':'🔴 غير متصلة'}</span>
+      </label>
+    </div>
+    ${S.watchOn?`
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 text-center">
+        ${b('v-hr','نبض القلب')}
+        ${b('v-sp','الأكسجين SpO2')}
+        ${b('v-tp','الحرارة')}
+        <div class="rounded-xl p-2.5 bg-slate-900/70 border border-slate-800">
+          <div class="mut text-xs">قياس السكر ${hasDiabetes?'(مريض سكري)':''}</div>
+          <b class="text-lg sm:text-xl ${c.sugar>140?'text-amber-400':'text-teal-300'}">${c.sugar} mg/dL</b>
+        </div>
+      </div>
+      <div class="text-xs mut mt-2 flex justify-between">
+        <span>مستشعر السقوط بالمعصم (Accelerometer): <b class="text-green-400">نشط</b></span>
+        <span>مزامنة لحظية مع الطبيب والمرافق</span>
+      </div>`:
+    `<div class="mt-2 p-3 rounded-xl bg-slate-900/60 text-xs mut text-center">⚠️ الساعة الذكية غير متصلة – تعتمد المنظومة حالياً على الكاميرا الذكية</div>`}
+  </div>`;
+}
+
+const vt=()=>{
+  const t=Date.now(),f=F.a>50||S.emergency;
+  return{
+    hr:f?124:Math.round(75+5*Math.sin(t/4000)),
+    sp:f?91:Math.round(98+Math.sin(t/7000)),
+    tp:(36.7+.12*Math.sin(t/9000)).toFixed(1)
+  };
+};
+setInterval(()=>{
+  if(!S.watchOn)return;
+  const v=vt(),s=(c,x,bad)=>document.querySelectorAll(c).forEach(e=>{e.textContent=x;e.style.color=bad?'#f87171':'#5eead4'});
+  s('.v-hr',v.hr+' BPM',v.hr>110);
+  s('.v-sp',v.sp+'%',v.sp<94);
+  s('.v-tp',v.tp+'°C',false);
+},1000);
+
+// ---- السياج الجغرافي (مهم جداً لمرضى الزهايمر والأطفال) ----
+function geo(){
+  const isAlz=cur().p.cond.includes('الزهايمر');
+  return `
+  <div class="card">
+    <div class="flex flex-wrap justify-between items-center gap-2">
+      <b class="ttl"><i data-lucide="locate-fixed"></i> السياج الجغرافي الآمن – شارع مصطفى كامل، ملوي (500 م)</b>
+      ${isAlz?'<span class="badge bg-amber-950 text-amber-300 border border-amber-700">حماية الزهايمر نشطة</span>':''}
+    </div>
+    <svg viewBox="0 0 220 220" class="w-full mt-2 rounded-xl border border-slate-800" style="max-height:210px;background:#09101d">
+      <circle cx="110" cy="110" r="80" fill="rgba(20,184,166,.12)" stroke="#14b8a6" stroke-dasharray="4"/>
+      <circle cx="110" cy="110" r="4" fill="#14b8a6"/>
+      <text x="110" y="128" font-size="9" text-anchor="middle" fill="#94a3b8">شارع مصطفى كامل - ملوي</text>
+      <circle id="gd" r="7" cx="110" cy="110" fill="#22c55e"/>
+    </svg>
+    <input type="range" min="0" max="700" value="${S.dist}" class="w-full mt-2 accent-teal-500" oninput="S.dist=+this.value;syncGeo()">
+    <div id="gt" class="text-xs sm:text-sm mt-1"></div>
+  </div>`;
+}
+function syncGeo(){
+  const d=$('gd');if(!d)return;
+  const m=S.dist,x=110+m*.16*.77,y=110-m*.16*.64,out=m>500;
+  d.setAttribute('cx',x);d.setAttribute('cy',y);d.setAttribute('fill',out?'#ef4444':'#22c55e');
+  const lat=C0.lat+m*.64/111320,lng=C0.lng+m*.77/(111320*Math.cos(C0.lat*Math.PI/180));
+  $('gt').innerHTML=`البعد عن المنزل: <b>${m} م</b> · (${lat.toFixed(5)}, ${lng.toFixed(5)}) · ${out?'<b class="text-rose-400">⚠️ تحذير: المريض خرج عن النطاق الآمن!</b>':'<span class="text-green-400">✅ داخل المنطقة الآمنة</span>'}`;
+  if(out&&!S.out){
+    S.out=true;const n=cur().p.name;
+    log('السياج الجغرافي','⚠️ تنبيه خروج '+n+' ('+cur().p.cond+') عن نطاق 500 م بملوي');
+    say('system','⚠️ تنبيه جغرافي: '+n+' ابتعد لمسافة '+m+' متر عن شارع مصطفى كامل بملوي!');
+    toast('تحذير: المريض خارج السياج الجغرافي!');
+    beep(750,.5);
+  }
+  if(!out&&S.out){S.out=false;log('السياج الجغرافي',cur().p.name+' عاد إلى المنطقة الآمنة')}
+}
+
+function monitor(){
+  return vitals()+cam()+geo()+`
+  <div class="card">
+    <b class="ttl"><i data-lucide="flask-conical"></i> لوحة محاكاة الطوارئ والاختبار</b>
+    <div class="flex flex-wrap gap-2 mt-2">
+      <button class="btn r" onclick="simFall()">⚠️ محاكاة سقوط مفاجئ</button>
+      <button class="btn r" onclick="alarm('زر استغاثة يدوي SOS')">🆘 استغاثة فورية SOS</button>
+    </div>
+    <p class="text-xs mut mt-2">عند السقوط يبدأ عداد 30 ثانية مع صوت تنبيه، وإذا لم يستجب المريض يُفتح بث الكاميرا ويتم إخطار المرافق والطبيب والمستشفى.</p>
+  </div>`;
+}
+
+// ---- العرض التجريبي التلقائي (Demo) ----
+let DM=[];
+function cap(t){const e=$('dm');e.style.display=t?'flex':'none';$('dt').textContent=t||''}
+function stopDemo(){DM.forEach(clearTimeout);DM=[];cap('')}
+function demo(){
+  if(DM.length)return stopDemo();
+  S.me=0;S.sel=0;S.camOn=true;S.watchOn=true;
+  const st=[
+    ['1️⃣ المريض (مريض سكري) يحجز موعداً عند د. سارة حسن',()=>{setRole('patient');S.appts.push({pid:0,d:new Date().toISOString().slice(0,10),t:'11:00',r:'متابعة السكر والضغط',st:'جديد'});log('المريض','حجز موعد عند د. سارة');say('patient','حجزت موعداً لمتابعة السكر');render()}],
+    ['2️⃣ د. سارة حسن تؤكد الحجز وتكتب الروشتة وتظهر للمريض فوراً',()=>{setRole('doctor');const a=S.appts[S.appts.length-1];a.st='مؤكد';S.P[0].rx='جلوكوفاج 500 مجم بعد الغداء + أملوديبين 5 مجم صباحاً';log('د. سارة','تأكيد الموعد وكتابة الروشتة');say('doctor','تم تأكيد الموعد وإرسال الروشتة');render()}],
+    ['3️⃣ الكاميرا الذكية والساعة ترصدان سقوطاً مفاجئاً!',()=>simFall()],
+    ['4️⃣ إطلاق الإنذار وربط المرافق والمستشفى وفتح الكاميرا تلقائياً',()=>{endCD();alarm('إنذار سقوط تلقائي (عرض تجريبي)')}],
+    ['5️⃣ المرافق يتابع البث الحي للكاميرا والساعة الذكية',()=>setRole('companion')],
+    ['6️⃣ المستشفى يستلم البلاغ ويُرسل الإسعاف لشارع مصطفى كامل بملوي',()=>{setRole('hospital');log('المستشفى','إرسال إسعاف إلى شارع مصطفى كامل، ملوي');say('hospital','🚑 سيارة الإسعاف في الطريق إليكم')}],
+    ['7️⃣ اختبار السياج الجغرافي لحالة الزهايمر (الحاجة فاطمة)',()=>{endEm();S.me=1;setRole('companion');S.dist=640;render()}],
+    ['✅ اكتملت الجولة بنجاح!',()=>{S.dist=120;render()}]
+  ];
+  st.forEach((s,i)=>DM.push(setTimeout(()=>{cap(s[0]);s[1]()},i*4500)));
+  DM.push(setTimeout(stopDemo,st.length*4500+1500));
+}
+
+// ---- تحميل التطبيق كملف HTML مباشر على الجهاز ----
+function downloadApp(){
+  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='janbak-app.html';
+  a.click();
+  toast('تم بدء تحميل ملف janbak-app.html على جهازك');
+}
+
+render();renderChat();log('النظام','تشغيل منظومة جنبك – الموقع: شارع مصطفى كامل، مركز ملوي، المنيا');loop();
+</script>
+</body>
+</html>
